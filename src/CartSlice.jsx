@@ -21,13 +21,6 @@ export const CartSlice = createSlice({
       },
     removeItem: (state, action) => {
         state.items = state.items.filter(item => item.name !== action.payload);
-       // If item already exists in the cart, decrease its quantity
-        //   existingItem.quantity--;
-        // }   // const { name, image, cost } = action.payload; // Destructure product details from the action payload
-        // // Check if the item already exists in the cart by comparing names
-        // const existingItem = state.items.find(item => item.name === name);
-        // if (existingItem) {
-        //    
     },
     updateQuantity: (state, action) => {
         const { name, quantity } = action.payload;
