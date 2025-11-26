@@ -4,10 +4,40 @@ import CartItem from './CartItem';
 import { addItem } from './CartSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
+function AddButton( props ) {
+    const cart = useSelector(state => state.cart.items);
+    
+    const plant = props.plant;
+    let isAddedToCart = cart?.some(item => item.name === plant.name) || false;   
+    
+    // console.log( "isAddedToCart for " + plantName + ": " + isAddedToCart);
+
+    const handleClick = (plant) => {
+        isAddedToCart = true;
+        props.handle(plant);
+    };
+    if ( isAddedToCart ) {
+        return ( 
+            <button 
+                disabled className="product-button-disabled">
+                Added to Cart
+            </button>   
+        )
+    }
+    return (
+         <button 
+            className="product-button"
+            onClick={() => handleClick(plant)} // Handle adding plant to cart
+            >
+                Add to Cart
+        </button>  
+    )   
+}
+
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const [addedToCarr, setAddedTorCart] = useState({});
+    const [addedToCart, setAddedToCart] = useState({});
     const dispatch = useDispatch();
 
     const plantsArray = [
@@ -262,12 +292,16 @@ function ProductList({ onHomeClick }) {
         console.log( "add to cart: " + JSON.stringify(plant));
         dispatch(addItem(plant));
 
-        setAddedTorCart((prevState) => ({ 
+        setAddedToCart((prevState) => ({ 
             // Set the current product's name as a key with value 'true' to mark it as added
             ...prevState, [plant.name]: true,
         }));
+    };
 
-    }
+    const calculateTotalQuantity = () => {
+        return CartItem ? CartItem.reduce((total, item) => total + item.quantity, 0) : 0;
+    };
+
     return (
         <div>
             <div className="navbar" style={styleObj}>
@@ -307,12 +341,10 @@ function ProductList({ onHomeClick }) {
                                 {/* Display other plant details like description and cost */}
                                 <div className="product-description">{plant.description}</div> {/* Display plant description */}
                                 <div className="product-cost">{plant.cost}</div> {/* Display plant cost */}
-                                <button
-                                    className="product-button"
-                                    onClick={() => handleAddToCart(plant)} // Handle adding plant to cart
-                                >
-                                    Add to Cart
-                                </button>
+                                    <AddButton 
+                                        plant={plant} 
+                                        handle={handleAddToCart} 
+                                    />
                                 </div>
       ))}
     </div>
